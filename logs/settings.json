@@ -1,0 +1,11 @@
+{
+  "folderMonitor": true,
+  "autoClean": true,
+  "desktopNotif": true,
+  "backupOriginals": false,
+  "deleteTemp": true,
+  "watchedFolders": [
+    "F:\\Demo\\TE-Outputs\\CCl",
+    "F:\\Demo\\TE-Outputs\\DAV\\Exp2"
+  ]
+}
