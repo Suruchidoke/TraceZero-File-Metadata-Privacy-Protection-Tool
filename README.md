@@ -1,5 +1,11 @@
 # TraceZero: File Metadata Privacy Protection Tool
 
+[![Build & Release TraceZero](https://github.com/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool/actions/workflows/build-and-release.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool?label=Latest%20Release)](https://github.com/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool/releases/latest)
+[![Java 17](https://img.shields.io/badge/Java-17+-blue.svg)](https://adoptium.net/)
+
+> 📦 **Quick Download**: Download the ready-to-run release package from [GitHub Releases](https://github.com/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool/releases/latest) (`TraceZero-Windows.zip` or `TraceZero.jar`).
+
 TraceZero is a modern, privacy-focused desktop application and CLI tool designed to protect your privacy by scanning, analyzing, and cleaning hidden metadata (such as EXIF, authors, creator details, location info, company names, and timestamps) from various file formats.
 
 The application features a premium user interface with a custom dark/light theme (built on top of the AtlantaFX framework) as well as a background directory sentinel (Folder Watcher) to automatically scrub files in real time.
@@ -70,33 +76,35 @@ Before running the project, make sure you have:
 
 ### Step 2: Run the Application
 
-Open a terminal and navigate to the project root directory:
-```powershell
-cd d:\project\TraceZero
-```
+#### Option A: Download Pre-Built Release (Instant Run)
+If you don't want to build from source:
+1. Download `TraceZero-Windows.zip` from [GitHub Releases](https://github.com/Suruchidoke/TraceZero-File-Metadata-Privacy-Protection-Tool/releases/latest).
+2. Extract the ZIP and double-click `run-tracezero.bat` (or run `java -jar TraceZero.jar`).
 
-#### Option A: One-Click Windows Launcher (Easiest)
-Simply double-click `run-tracezero.bat` in the project root, or execute it from the terminal:
+---
+
+#### Option B: One-Click Windows Launcher from Source
+Open a terminal in the project directory (`cd d:\project\TraceZero`) and run:
 ```powershell
 .\run-tracezero.bat
 ```
 *(This script automatically verifies Java 17+, builds the executable if needed, and launches the desktop GUI.)*
 
-#### Option B: Launch GUI Mode via Maven
+#### Option C: Launch GUI Mode via Maven
 To launch the full interactive desktop application using the Maven wrapper:
 ```powershell
 .\mvnw clean javafx:run
 ```
 *(On first startup, this will download dependencies, compile the code, and launch the interface.)*
 
-#### Option C: Launch CLI Mode (Direct File Processing)
+#### Option D: Launch CLI Mode (Direct File Processing)
 To sanitize a file directly from your terminal without opening the GUI:
 ```powershell
 .\mvnw compile exec:java -D"exec.mainClass"="com.example.hellofx.Main" -D"exec.args"="C:\path\to\your\file.ext"
 ```
 *(Replace `C:\path\to\your\file.ext` with the path of the file you want to clean.)*
 
-#### Option D: Build and Run Standalone JAR
+#### Option E: Build and Run Standalone JAR
 You can package the application into a standalone runnable `.jar` file:
 
 1. **Build the package:**
