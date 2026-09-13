@@ -17,9 +17,14 @@ public class TraceZeroEngine {
         Logger.getLogger("org.apache.pdfbox").setLevel(Level.SEVERE);
         System.setProperty("log4j2.loggerContextFactory", "org.apache.logging.log4j.simple.SimpleLoggerContextFactory");
 
-        // Target file path (Change this string to test different files!)
-        String testFilePath = "F:/Demo/Cognifyz_Internship_Khagesh_Gajarushi.zip";
+        if (args.length == 0) {
+            System.out.println("=== TRACEZERO ENGINE ===");
+            System.out.println("Usage: java -cp <classpath> com.example.hellofx.core.TraceZeroEngine <path-to-file>");
+            System.out.println("Please specify a target file to scan and clean.");
+            return;
+        }
 
+        String testFilePath = args[0];
         File targetFile = new File(testFilePath);
 
         if (!targetFile.exists()) {
@@ -42,7 +47,9 @@ public class TraceZeroEngine {
                 processPDF(targetFile);
                 break;
             case DOCX:
-                processDOCX(targetFile);
+            case XLSX:
+            case PPTX:
+                processOffice(targetFile);
                 break;
             case ZIP: // 🚀 Added ZIP routing here!
                 processZIP(targetFile);
@@ -73,13 +80,13 @@ public class TraceZeroEngine {
         handleResult(cleanFile);
     }
 
-    private static void processDOCX(File docxFile) {
-        System.out.println("🔍 SCANNING DOCX...");
-        List<String> data = DocxScanner.scanDOCX(docxFile);
+    private static void processOffice(File officeFile) {
+        System.out.println("🔍 SCANNING OFFICE DOCUMENT...");
+        List<String> data = OfficeScanner.scanOfficeFile(officeFile);
         printResults(data);
 
-        System.out.println("🧹 CLEANING DOCX...");
-        File cleanFile = DocxCleaner.cleanDOCX(docxFile);
+        System.out.println("🧹 CLEANING OFFICE DOCUMENT...");
+        File cleanFile = OfficeCleaner.cleanOfficeFile(officeFile);
         handleResult(cleanFile);
     }
 

@@ -66,7 +66,7 @@ public class CleanSanitizeController implements Initializable {
                 switch (type) {
                     case IMAGE -> cleanedFile = ImageCleaner.cleanImage(fileToClean);
                     case PDF   -> cleanedFile = PdfCleaner.cleanPDF(fileToClean);
-                    case DOCX  -> cleanedFile = DocxCleaner.cleanDOCX(fileToClean);
+                    case DOCX, XLSX, PPTX -> cleanedFile = OfficeCleaner.cleanOfficeFile(fileToClean);
                     case ZIP   -> cleanedFile = ZipCleaner.cleanZIP(fileToClean);
                     default -> {
                         System.out.println("🚫 Unsupported file type for cleaning.");

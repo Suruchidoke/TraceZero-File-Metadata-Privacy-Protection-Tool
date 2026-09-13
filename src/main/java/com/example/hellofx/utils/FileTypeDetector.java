@@ -4,17 +4,19 @@ import java.io.File;
 
 public class FileTypeDetector {
 
-    // This defines the exact categories our engine understands
+    // Categories understood by the TraceZero engine
     public enum FileType {
         IMAGE,
         PDF,
         DOCX,
-        ZIP,   // 🚀 Added ZIP support
+        XLSX,
+        PPTX,
+        ZIP,
         UNSUPPORTED
     }
 
     /**
-     * Looks at a file and tells the engine exactly how to route it.
+     * Inspects a file name and returns the corresponding FileType category.
      */
     public static FileType detect(File file) {
         if (file == null || !file.exists()) {
@@ -23,24 +25,32 @@ public class FileTypeDetector {
 
         String fileName = file.getName().toLowerCase();
 
-        // 1. Check for Images
-        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
+        // 1. Images
+        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png") ||
+                fileName.endsWith(".bmp") || fileName.endsWith(".gif")) {
             return FileType.IMAGE;
         }
-        // 2. Check for PDFs
+        // 2. PDFs
         else if (fileName.endsWith(".pdf")) {
             return FileType.PDF;
         }
-        // 3. Check for Word Documents
+        // 3. Microsoft Word
         else if (fileName.endsWith(".docx") || fileName.endsWith(".doc")) {
             return FileType.DOCX;
         }
-        // 4. Check for ZIP Archives
-        else if (fileName.endsWith(".zip")) { // 🚀 Route for ZIP files
+        // 4. Microsoft Excel
+        else if (fileName.endsWith(".xlsx") || fileName.endsWith(".xls")) {
+            return FileType.XLSX;
+        }
+        // 5. Microsoft PowerPoint
+        else if (fileName.endsWith(".pptx") || fileName.endsWith(".ppt")) {
+            return FileType.PPTX;
+        }
+        // 6. ZIP Archives
+        else if (fileName.endsWith(".zip")) {
             return FileType.ZIP;
         }
 
-        // If we don't know what it is, we reject it to keep the engine safe
         return FileType.UNSUPPORTED;
     }
 }

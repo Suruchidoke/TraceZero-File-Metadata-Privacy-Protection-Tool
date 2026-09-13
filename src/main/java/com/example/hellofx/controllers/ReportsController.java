@@ -309,7 +309,62 @@ public class ReportsController implements Initializable {
 
     @FXML
     private void onExportJSON() {
-        System.out.println("Export JSON clicked");
+        if (currentSelectedReport == null) return;
+
+        try {
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Save TraceZero Forensic JSON Report");
+            String baseName = currentSelectedReport.fileName().replaceFirst("[.][^.]+$", "");
+            fileChooser.setInitialFileName("TraceZero_Report_" + baseName + ".json");
+            fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("JSON Files (*.json)", "*.json"));
+
+            File jsonFile = fileChooser.showSaveDialog(detailsView.getScene().getWindow());
+            if (jsonFile == null) {
+                System.out.println(">>> JSON Export cancelled by user.");
+                return;
+            }
+
+            java.util.Map<String, Object> reportMap = new java.util.LinkedHashMap<>();
+            reportMap.put("tool", "TraceZero File Metadata Privacy Firewall");
+            reportMap.put("version", "1.0.0");
+            reportMap.put("exportedAt", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            java.util.Map<String, Object> targetInfo = new java.util.LinkedHashMap<>();
+            targetInfo.put("fileName", currentSelectedReport.fileName());
+            targetInfo.put("fileType", currentSelectedReport.fileType());
+            targetInfo.put("fileSize", currentSelectedReport.fileSize());
+            targetInfo.put("scanTimestamp", currentSelectedReport.scanTime());
+            targetInfo.put("fileHash", currentSelectedReport.hash());
+            if (currentSelectedReport.actualFile() != null) {
+                targetInfo.put("absolutePath", currentSelectedReport.actualFile().getAbsolutePath());
+            }
+            reportMap.put("fileDetails", targetInfo);
+
+            java.util.Map<String, Object> audit = new java.util.LinkedHashMap<>();
+            audit.put("riskScore", currentSelectedReport.score());
+            audit.put("riskLevel", currentSelectedReport.riskLevel());
+            audit.put("totalMetadataTagsFound", currentSelectedReport.totalMet());
+            audit.put("sensitiveTagsIdentified", currentSelectedReport.sensMet());
+            audit.put("metadataTagsPurged", currentSelectedReport.remMet());
+            audit.put("status", "SANITIZED (METADATA PURGED)");
+            reportMap.put("securityAudit", audit);
+
+            reportMap.put("purgedMetadataDetails", currentSelectedReport.extractedData() != null ? currentSelectedReport.extractedData() : List.of());
+
+            com.google.gson.Gson gson = new com.google.gson.GsonBuilder().setPrettyPrinting().create();
+            try (java.io.FileWriter writer = new java.io.FileWriter(jsonFile)) {
+                gson.toJson(reportMap, writer);
+            }
+
+            System.out.println(">>> SUCCESS: JSON Forensic Report saved to: " + jsonFile.getAbsolutePath());
+
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(jsonFile);
+            }
+        } catch (Exception e) {
+            System.err.println("!!! Error exporting JSON: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

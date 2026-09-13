@@ -4,6 +4,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.example.hellofx.core.StatisticsManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,21 +14,30 @@ public class ImageScanner {
 
     public static List<String> scanImage(File imageFile) {
         List<String> dataList = new ArrayList<>();
+        boolean gpsFound = false;
+
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(imageFile);
 
             for (Directory directory : metadata.getDirectories()) {
                 String dirName = directory.getName();
 
-                // 🚀 THE FIX: Ignore structural and generic file system directories
+                // Ignore generic format structural markers
                 if (dirName.contains("JPEG") || dirName.contains("JFIF") ||
                         dirName.contains("Huffman") || dirName.equalsIgnoreCase("File Type") ||
                         dirName.equalsIgnoreCase("File")) {
-                    continue; // Skip to the next directory
+                    continue;
+                }
+
+                boolean isGps = dirName.toLowerCase().contains("gps");
+                if (isGps && !gpsFound) {
+                    gpsFound = true;
+                    StatisticsManager.getInstance().incrementGpsDetected();
                 }
 
                 for (Tag tag : directory.getTags()) {
-                    dataList.add("[" + dirName + "] " + tag.getTagName() + ": " + tag.getDescription());
+                    String prefix = isGps ? "[GPS LOCATION ⚠️]" : "[" + dirName + "]";
+                    dataList.add(prefix + " " + tag.getTagName() + ": " + tag.getDescription());
                 }
             }
         } catch (Exception e) {

@@ -69,8 +69,8 @@ public class ScanFilesController implements Initializable {
             switch (type) {
                 case IMAGE -> currentScanResults = ImageScanner.scanImage(file);
                 case PDF   -> currentScanResults = PdfScanner.scanPDF(file);
-                case DOCX  -> currentScanResults = DocxScanner.scanDOCX(file);
-                case ZIP   -> currentScanResults = ZipScanner.scanZIP(file); // <-- The Magic Link
+                case DOCX, XLSX, PPTX -> currentScanResults = OfficeScanner.scanOfficeFile(file);
+                case ZIP   -> currentScanResults = ZipScanner.scanZIP(file);
                 default    -> currentScanResults = List.of("Status: File type not supported");
             }
 
@@ -87,9 +87,14 @@ public class ScanFilesController implements Initializable {
                     }
                 }
 
-                double score = Math.min(currentScanResults.size() * 0.2, 1.0);
+                double baseScore = Math.min(currentScanResults.size() * 0.2, 1.0);
+                boolean hasGps = currentScanResults.stream().anyMatch(s -> s.contains("[GPS") || s.contains("GPS"));
+                double score = hasGps ? Math.max(baseScore, 0.90) : baseScore;
+
                 if (riskProgressBar != null) riskProgressBar.setProgress(score);
-                if (lblRiskScore != null) lblRiskScore.setText((int)(score * 100) + "/100");
+                if (lblRiskScore != null) {
+                    lblRiskScore.setText((int)(score * 100) + "/100" + (hasGps ? " (CRITICAL GPS)" : ""));
+                }
 
                 showResults();
 

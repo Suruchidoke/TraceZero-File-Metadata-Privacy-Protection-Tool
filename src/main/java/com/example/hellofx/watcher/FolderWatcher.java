@@ -3,6 +3,7 @@ package com.example.hellofx.watcher;
 import com.example.hellofx.cleaner.DocxCleaner;
 import com.example.hellofx.cleaner.ImageCleaner;
 import com.example.hellofx.cleaner.PdfCleaner;
+import com.example.hellofx.cleaner.ZipCleaner;
 import com.example.hellofx.core.LogManager;
 import com.example.hellofx.core.StatisticsManager;
 import com.example.hellofx.utils.FileTypeDetector;
@@ -181,7 +182,8 @@ public class FolderWatcher {
                     switch (type) {
                         case IMAGE -> cleanedFile = ImageCleaner.cleanImage(file);
                         case PDF   -> cleanedFile = PdfCleaner.cleanPDF(file);
-                        case DOCX  -> cleanedFile = DocxCleaner.cleanDOCX(file);
+                        case DOCX, XLSX, PPTX -> cleanedFile = com.example.hellofx.cleaner.OfficeCleaner.cleanOfficeFile(file);
+                        case ZIP   -> cleanedFile = ZipCleaner.cleanZIP(file);
                     }
                 }
 

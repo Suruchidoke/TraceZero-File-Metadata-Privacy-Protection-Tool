@@ -7,13 +7,16 @@ import java.util.List;
 
 public class HistoryManager {
 
-    // Saves the history file in the same folder as your PDFs
-    private static final String HISTORY_FILE = "F:/Demo/TraceZero/src/main/java/com/example/hellofx/report/tracezero_history.dat";
+    // Portable path for persistent history records
+    private static final String HISTORY_FILE = "logs/tracezero_history.dat";
+    private static final String LEGACY_HISTORY_FILE = "src/main/java/com/example/hellofx/report/tracezero_history.dat";
 
     public static void saveHistory(List<ReportSummary> historyList) {
         try {
             File file = new File(HISTORY_FILE);
-            file.getParentFile().mkdirs(); // Ensure folder exists
+            if (file.getParentFile() != null) {
+                file.getParentFile().mkdirs(); // Ensure folder exists
+            }
 
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 // Convert to a standard ArrayList to ensure it saves safely
@@ -28,8 +31,15 @@ public class HistoryManager {
     @SuppressWarnings("unchecked")
     public static List<ReportSummary> loadHistory() {
         File file = new File(HISTORY_FILE);
+
+        // Fallback/migration: Check if legacy file exists from previous development
         if (!file.exists()) {
-            return new ArrayList<>(); // Return empty list if it's the first time running
+            File legacy = new File(LEGACY_HISTORY_FILE);
+            if (legacy.exists()) {
+                file = legacy;
+            } else {
+                return new ArrayList<>(); // Return empty list if it's the first time running
+            }
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {

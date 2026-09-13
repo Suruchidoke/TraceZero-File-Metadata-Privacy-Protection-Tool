@@ -92,11 +92,11 @@ You can pack the application into a standalone runnable `.jar` file:
    ```
 2. **Run GUI Mode:**
    ```powershell
-   java -jar target/Hellofx-1.0-SNAPSHOT.jar
+   java -jar target/TraceZero-1.0-SNAPSHOT.jar
    ```
 3. **Run CLI Mode (Process File):**
    ```powershell
-   java -jar target/Hellofx-1.0-SNAPSHOT.jar "C:\path\to\your\file.ext"
+   java -jar target/TraceZero-1.0-SNAPSHOT.jar "C:\path\to\your\file.ext"
    ```
 
 ---

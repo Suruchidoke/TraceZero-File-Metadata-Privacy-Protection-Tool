@@ -2,6 +2,7 @@ package com.example.hellofx;
 
 import com.example.hellofx.cleaner.DocxCleaner;
 import com.example.hellofx.cleaner.ImageCleaner;
+import com.example.hellofx.cleaner.OfficeCleaner;
 import com.example.hellofx.cleaner.PdfCleaner;
 import com.example.hellofx.cleaner.ZipCleaner;
 import com.example.hellofx.utils.FileTypeDetector;
@@ -15,7 +16,6 @@ public class Main {
             runCLI(args[0]);
         } else {
             // 🖥️ GUI Mode: Launch the full JavaFX interface
-            // We removed the setUserAgentStylesheet from here to prevent the crash!
             Application.launch(HelloApplication.class, args);
         }
     }
@@ -34,12 +34,11 @@ public class Main {
 
         try {
             File cleaned = null;
-            // ... inside runCLI method ...
             switch (type) {
                 case IMAGE -> cleaned = ImageCleaner.cleanImage(file);
                 case PDF   -> cleaned = PdfCleaner.cleanPDF(file);
-                case DOCX  -> cleaned = DocxCleaner.cleanDOCX(file);
-                case ZIP   -> cleaned = ZipCleaner.cleanZIP(file); // 🚀 Wire the ZIP logic
+                case DOCX, XLSX, PPTX -> cleaned = OfficeCleaner.cleanOfficeFile(file);
+                case ZIP   -> cleaned = ZipCleaner.cleanZIP(file);
                 default -> System.out.println("🚫 Unsupported file type.");
             }
 

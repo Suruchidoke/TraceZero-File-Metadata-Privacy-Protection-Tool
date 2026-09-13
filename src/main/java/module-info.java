@@ -28,4 +28,7 @@ module com.example.hellofx {
     exports com.example.hellofx;
     exports com.example.hellofx.controllers;
     exports com.example.hellofx.core;
+    exports com.example.hellofx.cleaner;
+    exports com.example.hellofx.scanner;
+    exports com.example.hellofx.utils;
 }
