@@ -9,6 +9,14 @@ echo.
 echo Launching TraceZero Desktop Application...
 echo.
 
+if exist "TraceZero.jar" (
+    start "" javaw -jar "TraceZero.jar"
+    if %ERRORLEVEL% EQU 0 (
+        echo [OK] TraceZero is now running!
+        exit /b 0
+    )
+)
+
 if exist "target\TraceZero-1.0-SNAPSHOT.jar" (
     start "" javaw -jar "target\TraceZero-1.0-SNAPSHOT.jar"
     if %ERRORLEVEL% EQU 0 (

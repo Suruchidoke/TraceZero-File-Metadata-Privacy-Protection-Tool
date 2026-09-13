@@ -1,0 +1,100 @@
+name: Build & Release TraceZero
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: false
+        default: ''
+      is_draft:
+        description: 'Publish as draft?'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Make Maven Wrapper Executable
+        run: chmod +x mvnw
+
+      - name: Run Automated Tests
+        run: ./mvnw test
+
+      - name: Build Standalone JAR
+        run: ./mvnw clean package -DskipTests
+
+      - name: Prepare Release Artifacts
+        run: |
+          mkdir -p dist
+          cp target/TraceZero-1.0-SNAPSHOT.jar dist/TraceZero.jar
+          cp run-tracezero.bat dist/
+          cd dist
+          zip -r TraceZero-Windows.zip TraceZero.jar run-tracezero.bat
+          cd ..
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TraceZero-Build
+          path: |
+            dist/TraceZero.jar
+            dist/TraceZero-Windows.zip
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag != '')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: TraceZero-Build
+          path: dist
+
+      - name: Determine Tag Name
+        id: tag_name
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.release_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag_name.outputs.tag }}
+          name: TraceZero ${{ steps.tag_name.outputs.tag }}
+          draft: ${{ github.event.inputs.is_draft || false }}
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            dist/TraceZero.jar
+            dist/TraceZero-Windows.zip
